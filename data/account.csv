@@ -1,0 +1,6 @@
+username,full_name,password_hash,current_question_id,questions_learned,active
+user1,Nguyễn Văn A,e10adc3949ba59abbe56e057f20f883e,5,"1,2,3,4",1
+user2,Trần Thị B,202cb962ac59075b964b07152d234b70,8,"1,2,3,4,5,6,7,8",1
+guest,Guest User,,11,"1,2,3,4,5,6,7,8,9,10",1
+thien,thien,e10adc3949ba59abbe56e057f20f883e,1,,1
+vttt1789,Finn GM,6ee51d9881ad47cc3d8318ab1eb63774,15,"1,2,3,4,5,6,7,8,9,10,11,12,13,14",1

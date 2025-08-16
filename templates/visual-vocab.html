@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🖼️ EngFeast - Học từ vựng bằng hình ảnh</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700&display=swap');
+    
+    :root {
+      --primary: #ff206e;
+      --secondary: #39c5ff;
+      --dark: #1a1a2e;
+      --light: #f8f9fa;
+      --success: #00ff88;
+      --warning: #ffcc00;
+      --danger: #ff3860;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255, 32, 110, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 32, 110, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 32, 110, 0); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+    
+    @keyframes shine {
+      0% { background-position: -100px; }
+      100% { background-position: 100px; }
+    }
+    
+    @keyframes zoomIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      background-attachment: fixed;
+      margin: 0;
+      padding: 0;
+      color: var(--light);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      color: var(--secondary);
+      margin: 0;
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px rgba(57, 197, 255, 0.7);
+      animation: pulse 2s infinite, fadeIn 1s ease-out;
+      font-family: 'Press Start 2P', cursive;
+      letter-spacing: 2px;
+      position: relative;
+    }
+    
+    h1::before, h1::after {
+      content: "✦";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary);
+      font-size: 2rem;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    h1::before { left: -40px; }
+    h1::after { right: -40px; animation-delay: 1.5s; }
+    
+    .badge {
+      display: inline-block;
+      background: var(--warning);
+      color: #1a1a2e;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      margin-left: 15px;
+      font-weight: bold;
+    }
+    
+    .card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      animation: zoomIn 0.6s ease-out;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px) scale(1.01);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 32, 110, 0.2);
+    }
+    
+    .image-container {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.3);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+    
+    .vocab-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    
+    .vocab-image.loaded {
+      opacity: 1;
+    }
+    
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+      animation: fadeIn 1s ease-out;
+    }
+    
+    .content {
+      padding: 30px;
+      text-align: center;
+    }
+    
+    .question {
+      font-size: 1.6rem;
+      color: var(--secondary);
+      margin-bottom: 25px;
+      line-height: 1.6;
+      font-family: 'Orbitron', sans-serif;
+      text-shadow: 0 0 8px rgba(57, 197, 255, 0.5);
+    }
+    
+    .answer {
+      display: none;
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    .answer-row {
+      margin: 10px 0;
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+    
+    .answer-label {
+      font-weight: bold;
+      color: var(--primary);
+      margin-right: 10px;
+    }
+    
+    .answer-text {
+      color: #e0e0ff;
+      font-style: italic;
+    }
+    
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    
+    button {
+      background: linear-gradient(45deg, var(--primary), #ff4785);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1.1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(255, 32, 110, 0.4);
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
+    }
+    
+    button:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 25px rgba(255, 32, 110, 0.6);
+    }
+    
+    button:active {
+      transform: translateY(1px);
+    }
+    
+    button.glow {
+      animation: pulse 2s infinite;
+    }
+    
+    button.answer-btn {
+      background: linear-gradient(45deg, var(--secondary), #66d9ff);
+      box-shadow: 0 4px 15px rgba(57, 197, 255, 0.4);
+    }
+    
+    .progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 3px;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 10px rgba(255, 32, 110, 0.5);
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+      padding: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .sparkle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10;
+      animation: sparkle 1s ease-out;
+    }
+    
+    @keyframes sparkle {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.5); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .image-container {
+        height: 300px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .question {
+        font-size: 1.3rem;
+      }
+      
+      button {
+        padding: 12px 20px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+
+  <div class="container">
+    <header>
+      <h1>🖼️ Học từ vựng bằng hình ảnh <span class="badge">VISUAL MODE</span></h1>
+    </header>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <div class="card">
+      <div class="image-container">
+        <img id="vocab-image" class="vocab-image" src="" alt="Ảnh minh họa">
+        <div class="overlay" id="overlay">🤔 Bạn đoán xem đây là gì?</div>
+      </div>
+
+      <div class="content">
+        <p class="question" id="question">Nhấn "⏭️ Câu Tiếp Theo" để bắt đầu!</p>
+
+        <div class="answer" id="answer">
+          <div class="answer-row">
+            <span class="answer-label">🇻🇳 Nghĩa tiếng Việt:</span>
+            <span class="answer-text" id="answer_vi"></span>
+          </div>
+          <div class="answer-row">
+            <span class="answer-label">🇬🇧 Nghĩa tiếng Anh:</span>
+            <span class="answer-text" id="answer_en"></span>
+          </div>
+        </div>
+
+        <div class="button-container">
+          <button onclick="showAnswer()" class="answer-btn glow">
+            💡 Xem Đáp Án
+          </button>
+          <button onclick="nextQuestion()">
+            ⏭️ Câu Tiếp Theo
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      🖼️ Học từ vựng bằng hình ảnh – Tăng trí nhớ hình ảnh | Mỗi ảnh là một từ vựng
+      <div style="margin-top: 10px;">
+        <span>🎨 Anime Style</span> | <span>🎯 Visual Memory</span> | <span>💫 EngFeast</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let questions = [];
+    let current = 0;
+    let totalQuestions = 0;
+
+    // Create stars
+    function createStars() {
+      const starsContainer = document.getElementById('stars');
+      for (let i = 0; i < 100; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.width = `${Math.random() * 3}px`;
+        star.style.height = `${Math.random() * 3}px`;
+        star.style.animationDelay = `${Math.random() * 3}s`;
+        star.style.opacity = Math.random() * 0.8 + 0.2;
+        starsContainer.appendChild(star);
+      }
+    }
+
+    // Create sparkle
+    function createSparkle(x, y) {
+      const sparkle = document.createElement('div');
+      sparkle.classList.add('sparkle');
+      sparkle.style.left = `${x}px`;
+      sparkle.style.top = `${y}px`;
+      document.body.appendChild(sparkle);
+      setTimeout(() => document.body.removeChild(sparkle), 1000);
+    }
+
+    document.addEventListener('click', e => {
+      if (e.target.tagName === 'BUTTON') createSparkle(e.clientX, e.clientY);
+    });
+
+    // Initialize
+    window.onload = function() {
+      createStars();
+
+      fetch('/api/questions')
+        .then(res => res.json())
+        .then(data => {
+          questions = data.filter(q => q.image && q.image.includes('http'));
+          totalQuestions = questions.length;
+          if (questions.length > 0) {
+            nextQuestion();
+          } else {
+            alert("Không có dữ liệu hình ảnh. Vui lòng kiểm tra API hoặc Unsplash.");
+          }
+        })
+        .catch(err => {
+          console.error("Lỗi tải câu hỏi:", err);
+          alert("Không thể kết nối đến máy chủ");
+        });
+    };
+
+    function updateProgress() {
+      if (totalQuestions > 0) {
+        const progress = ((current + 1) / totalQuestions) * 100;
+        document.getElementById('progress-fill').style.width = `${progress}%`;
+      }
+    }
+
+    function nextQuestion() {
+      if (questions.length === 0) return;
+
+      const q = questions[current];
+      
+      // Update UI
+      const img = document.getElementById('vocab-image');
+      const overlay = document.getElementById('overlay');
+      
+      img.classList.remove('loaded');
+      img.onload = function() {
+        img.classList.add('loaded');
+        overlay.textContent = "🤔 Bạn đoán xem đây là gì?";
+      };
+      img.src = q.image;
+
+      document.getElementById('question').textContent = q.question_en;
+      document.getElementById('answer').style.display = 'none';
+      
+      // Update progress
+      updateProgress();
+      
+      // Next
+      current = (current + 1) % questions.length;
+    }
+
+    function showAnswer() {
+      const q = questions[(current - 1 + questions.length) % questions.length];
+      
+      document.getElementById('answer_vi').textContent = q.answer_vi;
+      document.getElementById('answer_en').textContent = q.answer_en;
+      document.getElementById('answer').style.display = 'block';
+      document.getElementById('overlay').textContent = `"${q.answer_en}"`;
+
+      // Mark as learned
+      fetch('/api/mark-learned', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: q.id })
+      }).catch(console.log);
+    }
+  </script>
+</body>
+</html>
